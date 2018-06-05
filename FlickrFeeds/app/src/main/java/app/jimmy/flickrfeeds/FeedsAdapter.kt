@@ -51,7 +51,7 @@ class FeedsAdapter(private val myDataset: ArrayList<FeedItemData>,private val IM
         holder.itemView.setOnClickListener(object :View.OnClickListener{
             override fun onClick(v: View?) {
                 selectedPosition = position
-
+                // TODO : Add the details view and populate it with data at the correct position(current pos+1 if curr (pos+1)%2==0 else current pos + 2)
                 notifyDataSetChanged()
             }
 
