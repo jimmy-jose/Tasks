@@ -1,0 +1,2 @@
+Since the requirement needs to be as accurate as possible and because of the limitation of 100 bytes, I will use Byte data type to transfer the data.
+Bytes have a range of -128 to 127. Since the max and minmum temperature is going to be -100 to 150. I will write a program to map -128 as -100, -127 as -99 and so on till 122 being mapped as +150. At the receiving end i will have a decoder which will do the opposite. With 100 bytes of data i will be able to transfer 50 percent of total data collected which can be interpolated to find the rest of the data.
