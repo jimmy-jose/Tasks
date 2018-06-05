@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
-import android.widget.Switch
-import android.widget.TextView
 import com.squareup.picasso.Picasso
 
 
@@ -16,24 +14,29 @@ import com.squareup.picasso.Picasso
  * @author Jimmy
  * Created on 5/6/18.
  */
-class FeedsAdapter(private val myDataset: ArrayList<FeedItemData>,private val IMAGE_WIDTH:Int):RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class FeedsAdapter(private val myDataset: ArrayList<FeedItemData>,private val IMAGE_WIDTH:Int)
+    :RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    object Types{
+        const val IMAGE_TYPE = 1
+        const val DETAILS_TYPE = 2
+    }
     var selectedPosition = -1
     override fun getItemCount() = myDataset.size
 
     override fun getItemViewType(position: Int): Int {
-        return 1
+        return Types.IMAGE_TYPE
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder.itemViewType){
-            1->{
+            Types.IMAGE_TYPE->{
                 val holderImage = holder as ViewHolderImages
                 Picasso.get()
                         .load(myDataset.get(position).media)
                         .resize(IMAGE_WIDTH,IMAGE_WIDTH)
                         .centerCrop()
-                        .into(holder.feedImage)
+                        .into(holderImage.feedImage)
             }else->{
                 val holderDetails = holder as ViewHolderDetails
             }

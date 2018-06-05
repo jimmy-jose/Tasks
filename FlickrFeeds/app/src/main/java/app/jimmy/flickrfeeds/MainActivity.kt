@@ -16,10 +16,26 @@ import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
 
+    private val TAG = this@MainActivity.javaClass.simpleName
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private var myDataset: ArrayList<FeedItemData> = ArrayList()
+
+    object JSONKeys {
+        const val ITEMS = "items"
+        const val MEDIA = "media"
+        const val M="m"
+        const val TITLE="title"
+        const val LINK="link"
+        const val DATE_TAKEN="date_taken"
+        const val AUTHOR = "author"
+        const val PUBLISHED = "published"
+        const val DESCRIPTION = "description"
+        const val AUTHOR_ID = "author_id"
+        const val TAGS = "tags"
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,51 +44,52 @@ class MainActivity : AppCompatActivity() {
         val display = windowManager.defaultDisplay
         val size = Point()
         display.getSize(size)
-        var DEVICE_WIDTH = size.x
+        val DEVICE_WIDTH = size.x
 
         viewManager = StaggeredGridLayoutManager(2,LinearLayoutManager.VERTICAL)
         viewAdapter = FeedsAdapter(myDataset,DEVICE_WIDTH/2)
 
         recyclerView = findViewById<RecyclerView>(R.id.feeds_rc_view).apply {
-            // use this setting to improve performance if you know that changes
-            // in content do not change the layout size of the RecyclerView
             setHasFixedSize(true)
-
-            // use a linear layout manager
             layoutManager = viewManager
-
-            // specify an viewAdapter (see also next example)
             adapter = viewAdapter
         }
-
-        getFeeds();
+        getFeeds()
     }
 
+    /**
+     * calls the api gets the result and add it to the recyclerview
+     */
     private fun getFeeds() {
         val queue = Volley.newRequestQueue(this)
-        val url = "https://api.flickr.com/services/feeds/photos_public.gne?format=json&nojsoncallback=1"
+        val url = getString(R.string.flikr_feeds_url)
 
-// Request a string response from the provided URL.
         val stringRequest = StringRequest(Request.Method.GET, url,
                 Response.Listener<String> { response ->
                     // Display the first 500 characters of the response string.
                     val jsonObject = JSONObject(response)
-                    val items = jsonObject.optJSONArray("items")
+                    val items = jsonObject.optJSONArray(JSONKeys.ITEMS)
 
-                    for (i:Int in 0..items.length()-1){
+                    for (i:Int in 0 until items.length()-1){
                         val item = items.get(i) as JSONObject
-                        Log.d("MainActivity",item.optJSONObject("media").optString("m"));
+                        Log.d(TAG,item.optJSONObject(JSONKeys.MEDIA).optString(JSONKeys.M))
 
-                        myDataset.add(FeedItemData(item.optString("title"),item.optString("link"),item.optJSONObject("media").optString("m"),item.optString("date_taken"),item.optString("description"),item.optString("published"),item.optString("author"),item.optString("author_id"),item.optString("tags")))
+                        myDataset.add(FeedItemData(item.optString(JSONKeys.TITLE),
+                                item.optString(JSONKeys.LINK),
+                                item.optJSONObject(JSONKeys.MEDIA).optString(JSONKeys.M),
+                                item.optString(JSONKeys.DATE_TAKEN),
+                                item.optString(JSONKeys.DESCRIPTION),
+                                item.optString(JSONKeys.PUBLISHED),
+                                item.optString(JSONKeys.AUTHOR),
+                                item.optString(JSONKeys.AUTHOR_ID),
+                                item.optString(JSONKeys.TAGS)))
 
                     }
                     viewAdapter.notifyDataSetChanged()
                 },
                 Response.ErrorListener {
-                    Toast.makeText(this,"Server Error! Please try again.",Toast.LENGTH_LONG).show()
+                    Toast.makeText(this,getString(R.string.server_error),Toast.LENGTH_LONG).show()
                 })
-
-// Add the request to the RequestQueue.
         queue.add(stringRequest)
     }
 }
