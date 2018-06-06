@@ -1,12 +1,15 @@
 package app.jimmy.flickrfeeds
 
 import android.graphics.Color
+import android.opengl.Visibility
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.TextView
 import com.squareup.picasso.Picasso
 
 
@@ -36,21 +39,32 @@ class FeedsAdapter(private val myDataset: ArrayList<FeedItemData>,private val IM
                         .load(myDataset.get(position).media)
                         .resize(IMAGE_WIDTH,IMAGE_WIDTH)
                         .centerCrop()
-                        .into(holderImage.feedImage)
-            }else->{
+                        .into(holderImage.itemImage)
+                holder.itemHeader.setText(myDataset.get(position).title)
+                val details: String = "Date Taken :"+myDataset.get(position).date_taken+"\n"+"Author :"+myDataset.get(position).author
+                holder.itemDesc.setText(details)
+            }
+            else->{
+                //for populating correct view in the recyclerview
                 val holderDetails = holder as ViewHolderDetails
             }
         }
 
         if (selectedPosition == position) {
             holder.itemView.setBackgroundColor(Color.parseColor("#303F9F"))
+            holder.itemView.findViewById<LinearLayout>(R.id.details_parent).visibility = View.VISIBLE
         } else {
             holder.itemView.setBackgroundColor(Color.WHITE)
+            holder.itemView.findViewById<LinearLayout>(R.id.details_parent).visibility = View.GONE
         }
 
         holder.itemView.setOnClickListener(object :View.OnClickListener{
             override fun onClick(v: View?) {
-                selectedPosition = position
+                if(selectedPosition == position){
+                    selectedPosition = -1
+                }else {
+                    selectedPosition = position
+                }
                 // TODO : Add the details view and populate it with data at the correct position(current pos+1 if curr (pos+1)%2==0 else current pos + 2)
                 notifyDataSetChanged()
             }
@@ -65,10 +79,11 @@ class FeedsAdapter(private val myDataset: ArrayList<FeedItemData>,private val IM
         when(viewType){
             1 -> {
                 val imageView = LayoutInflater.from(parent.context)
-                        .inflate(R.layout.feed_item, parent, false) as ImageView
+                        .inflate(R.layout.feed_item, parent, false) as RelativeLayout
                 // set the view's size, margins, paddings and layout parameters
                 return ViewHolderImages(imageView)
-            }else->{
+            }
+            else->{
                 val details = LayoutInflater.from(parent.context)
                         .inflate(R.layout.details_item,parent,false) as RelativeLayout
                 return ViewHolderDetails(details)
@@ -77,9 +92,11 @@ class FeedsAdapter(private val myDataset: ArrayList<FeedItemData>,private val IM
 
     }
 
-    class ViewHolderImages(val feedImage: ImageView) : RecyclerView.ViewHolder(feedImage)
+    class ViewHolderImages(val feedItemParent: RelativeLayout) : RecyclerView.ViewHolder(feedItemParent){
+        var itemHeader:TextView = feedItemParent.findViewById(R.id.item_header)
+        var itemDesc:TextView = feedItemParent.findViewById(R.id.item_descr)
+        var itemImage:ImageView = feedItemParent.findViewById(R.id.list_item_image)
+        var detailsParent:LinearLayout = feedItemParent.findViewById(R.id.details_parent)
+    }
     class ViewHolderDetails(val parent: RelativeLayout) : RecyclerView.ViewHolder(parent)
-
-
-
 }
