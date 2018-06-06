@@ -1,17 +1,20 @@
 package app.jimmy.flickrfeeds
 
 import android.graphics.Point
+import android.opengl.Visibility
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.StaggeredGridLayoutManager
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
@@ -61,12 +64,13 @@ class MainActivity : AppCompatActivity() {
      * calls the api gets the result and add it to the recyclerview
      */
     private fun getFeeds() {
+        progress.visibility = View.VISIBLE
         val queue = Volley.newRequestQueue(this)
         val url = getString(R.string.flikr_feeds_url)
 
         val stringRequest = StringRequest(Request.Method.GET, url,
                 Response.Listener<String> { response ->
-                    // Display the first 500 characters of the response string.
+                    progress.visibility = View.GONE
                     val jsonObject = JSONObject(response)
                     val items = jsonObject.optJSONArray(JSONKeys.ITEMS)
 
@@ -88,6 +92,7 @@ class MainActivity : AppCompatActivity() {
                     viewAdapter.notifyDataSetChanged()
                 },
                 Response.ErrorListener {
+                    progress.visibility = View.GONE
                     Toast.makeText(this,getString(R.string.server_error),Toast.LENGTH_LONG).show()
                 })
         queue.add(stringRequest)

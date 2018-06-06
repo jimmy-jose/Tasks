@@ -2,5 +2,5 @@
     <string name="app_name">FlickrFeeds</string>
     <string name="home">Home</string>
     <string name="server_error">Server Error! Please try again.</string>
-    <string name="flikr_feeds_url"><![CDATA[https://api.flickr.com/services/feeds/photos_public.gne?format=json&nojsoncallback=1]]></string>
+    <string name="flikr_feeds_url"><![CDATA[https://api.flickr.com/services/feeds/photos_public.gne?format=json&nojsoncallback=1&tags=abstract]]></string>
 </resources>
